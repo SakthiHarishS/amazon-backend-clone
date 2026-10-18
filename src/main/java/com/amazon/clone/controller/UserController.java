@@ -7,24 +7,46 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(originPatterns = "*")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
+    // Get all users (for Admin dashboard)
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Delete User by ID for Admin
+    // Register User endpoint (POST /api/users/register)
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.badRequest().body("Email already registered!");
+        }
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
+    }
+
+    // Login User endpoint (POST /api/users/login)
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody User user) {
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent() && existingUser.get().getPassword().equals(user.getPassword())) {
+            return ResponseEntity.ok(existingUser.get());
+        }
+        return ResponseEntity.status(401).body("Invalid email or password!");
+    }
+
+    // Delete User by ID (DELETE /api/users/{id})
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
