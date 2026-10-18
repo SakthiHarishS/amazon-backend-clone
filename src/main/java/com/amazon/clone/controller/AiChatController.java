@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ai")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(originPatterns = "*")
 public class AiChatController {
 
     @Autowired

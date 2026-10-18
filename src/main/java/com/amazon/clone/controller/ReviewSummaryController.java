@@ -10,7 +10,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/ai")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(originPatterns = "*")
 public class ReviewSummaryController {
 
     @Autowired
